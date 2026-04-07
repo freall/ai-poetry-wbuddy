@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>文脉星球 · 古诗词学习原型</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <div class="hero__badge">首个原型 · 本地数据 / 本地资源 / 本地数据库</div>
+        <div class="hero__content">
+          <div>
+            <p class="eyebrow">文脉星球 · Classics Learning Prototype</p>
+            <h1>把唐诗宋词古文，做成学生愿意刷、愿意学、愿意闯关的内容产品</h1>
+            <p class="hero__summary">
+              首批已经采集 16 篇作品，覆盖唐诗、宋词、教材常见古文，内含译文、背景、作者卡片、相关推荐和 48 道练习题。
+            </p>
+          </div>
+          <div class="hero__actions">
+            <button id="randomBtn" class="button button--primary">随机抽一篇</button>
+            <button id="focusBtn" class="button button--ghost">只看教材高频</button>
+          </div>
+        </div>
+        <div id="statsGrid" class="stats-grid"></div>
+      </header>
+
+      <main class="layout">
+        <section class="left-panel">
+          <div class="panel panel--sticky">
+            <div class="search-box">
+              <label for="searchInput">搜索作品 / 作者 / 主题</label>
+              <input id="searchInput" type="search" placeholder="例如：李白、月夜、岳阳楼记" />
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group__title">按专题</div>
+              <div id="collectionFilters" class="chips"></div>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group__title">按学段</div>
+              <div id="stageFilters" class="chips"></div>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group__title">你可以怎么学</div>
+              <ul class="learn-paths">
+                <li>像刷短视频一样上下浏览作品卡片</li>
+                <li>点进详情看原文、译文、作者和背景</li>
+                <li>做 3 道小题，答对后触发奖励动画</li>
+                <li>顺着相关推荐继续学下一篇</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="center-panel">
+          <div class="section-header">
+            <div>
+              <p class="section-header__eyebrow">Feed / 作品流</p>
+              <h2 id="feedTitle">全部作品</h2>
+            </div>
+            <div id="resultCount" class="result-count"></div>
+          </div>
+          <div id="worksFeed" class="works-feed"></div>
+        </section>
+
+        <aside class="right-panel">
+          <div id="detailPanel" class="panel detail-panel empty-state">
+            <div class="empty-state__icon">✦</div>
+            <h3>先选一篇作品</h3>
+            <p>左侧可以搜索、筛选，或者直接点“随机抽一篇”。</p>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <div id="celebration" class="celebration hidden" aria-hidden="true">
+      <div class="celebration__card">
+        <div class="celebration__stars">★ ★ ★</div>
+        <h3>闯关成功</h3>
+        <p id="celebrationText">你已经点亮这一篇作品的学习徽章。</p>
+        <button id="closeCelebration" class="button button--primary">继续学习</button>
+      </div>
+      <div class="confetti confetti--1"></div>
+      <div class="confetti confetti--2"></div>
+      <div class="confetti confetti--3"></div>
+      <div class="confetti confetti--4"></div>
+      <div class="confetti confetti--5"></div>
+      <div class="confetti confetti--6"></div>
+    </div>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>

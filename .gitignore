@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Logs
+*.log
+
+# Local runtime output
+out/
+.tmp/
+
+# Raw downloaded source material and local clones
+/data/raw/
+
+# Optional local databases outside prototype deliverable
+*.sqlite
