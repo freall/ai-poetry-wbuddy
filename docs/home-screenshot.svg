@@ -1,0 +1,42 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="900" rx="34" fill="#f5f1e8" />
+  <rect x="32" y="32" width="1376" height="836" rx="28" fill="#ffffff" stroke="#e8dfd0" />
+  <rect x="72" y="72" width="760" height="212" rx="28" fill="url(#hero)" />
+  <rect x="860" y="72" width="240" height="98" rx="24" fill="#eff7f3" />
+  <rect x="1120" y="72" width="248" height="98" rx="24" fill="#fff3e6" />
+  <rect x="860" y="186" width="240" height="98" rx="24" fill="#eef2ff" />
+  <rect x="1120" y="186" width="248" height="98" rx="24" fill="#fceff3" />
+  <rect x="72" y="320" width="1336" height="72" rx="22" fill="#f9f7f2" stroke="#ece4d8" />
+  <rect x="72" y="428" width="432" height="190" rx="26" fill="#fafcfa" stroke="#e4efe9" />
+  <rect x="524" y="428" width="432" height="190" rx="26" fill="#fffaf2" stroke="#f3e6cf" />
+  <rect x="976" y="428" width="432" height="190" rx="26" fill="#faf9ff" stroke="#e7e4f9" />
+  <rect x="72" y="650" width="306" height="182" rx="24" fill="#fbfaf8" stroke="#ede4d7" />
+  <rect x="396" y="650" width="306" height="182" rx="24" fill="#fbfaf8" stroke="#ede4d7" />
+  <rect x="720" y="650" width="306" height="182" rx="24" fill="#fbfaf8" stroke="#ede4d7" />
+  <rect x="1044" y="650" width="364" height="182" rx="24" fill="#fbfaf8" stroke="#ede4d7" />
+  <text x="108" y="144" fill="#ffffff" font-size="24" font-family="PingFang SC, Microsoft YaHei, sans-serif">正式首页 Hero</text>
+  <text x="108" y="198" fill="#ffffff" font-size="54" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">古诗词学习，不再只是资料站</text>
+  <text x="108" y="240" fill="#ecfdf5" font-size="24" font-family="PingFang SC, Microsoft YaHei, sans-serif">搜索、作品库、进度面板、错题本与成就系统聚合到同一屏。</text>
+  <text x="896" y="128" fill="#1f6a5d" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">已收录作品</text>
+  <text x="896" y="156" fill="#182230" font-size="34" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">132</text>
+  <text x="1152" y="128" fill="#b26528" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">累计答对</text>
+  <text x="1152" y="156" fill="#182230" font-size="34" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">17</text>
+  <text x="896" y="242" fill="#44559d" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">已解锁成就</text>
+  <text x="896" y="270" fill="#182230" font-size="34" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">3</text>
+  <text x="1152" y="242" fill="#b3475c" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">最佳连续学习</text>
+  <text x="1152" y="270" fill="#182230" font-size="34" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">5 天</text>
+  <text x="108" y="367" fill="#596273" font-size="22" font-family="PingFang SC, Microsoft YaHei, sans-serif">支持标题、作者、主题、名句与学段筛选的正式搜索栏</text>
+  <text x="108" y="476" fill="#1f6a5d" font-size="20" font-family="PingFang SC, Microsoft YaHei, sans-serif">学习进度概览</text>
+  <text x="560" y="476" fill="#b26528" font-size="20" font-family="PingFang SC, Microsoft YaHei, sans-serif">错题本</text>
+  <text x="1012" y="476" fill="#44559d" font-size="20" font-family="PingFang SC, Microsoft YaHei, sans-serif">成就系统</text>
+  <text x="108" y="706" fill="#182230" font-size="28" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">作品卡片流</text>
+  <text x="432" y="706" fill="#182230" font-size="28" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">作品卡片流</text>
+  <text x="756" y="706" fill="#182230" font-size="28" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">作品卡片流</text>
+  <text x="1080" y="706" fill="#182230" font-size="28" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">路线图面板</text>
+  <defs>
+    <linearGradient id="hero" x1="72" y1="72" x2="832" y2="284" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#17483f" />
+      <stop offset="1" stop-color="#cc9757" />
+    </linearGradient>
+  </defs>
+</svg>
