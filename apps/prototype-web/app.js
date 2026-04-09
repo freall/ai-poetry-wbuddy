@@ -105,8 +105,8 @@ function renderStats() {
     .map(
       (card) => `
         <article class="stat-card">
-          <div class="stat-card__label">${card.label}</div>
-          <div class="stat-card__value">${card.value}</div>
+          <div class="stat-card__label">${escapeHtml(card.label)}</div>
+          <div class="stat-card__value">${escapeHtml(card.value)}</div>
         </article>
       `
     )
@@ -119,13 +119,13 @@ function renderFilters() {
   elements.collectionFilters.innerHTML = collections
     .map(
       (collection) =>
-        `<button class="chip ${state.selectedCollection === collection ? "is-active" : ""}" data-filter-type="collection" data-value="${collection}">${collection}</button>`
+        `<button class="chip ${state.selectedCollection === collection ? "is-active" : ""}" data-filter-type="collection" data-value="${escapeAttr(collection)}">${escapeHtml(collection)}</button>`
     )
     .join("");
 
   elements.stageFilters.innerHTML = stages
     .map(
-      (stage) => `<button class="chip ${state.selectedStage === stage ? "is-active" : ""}" data-filter-type="stage" data-value="${stage}">${stage}</button>`)
+      (stage) => `<button class="chip ${state.selectedStage === stage ? "is-active" : ""}" data-filter-type="stage" data-value="${escapeAttr(stage)}">${escapeHtml(stage)}</button>`)
     .join("");
 
   document.querySelectorAll("[data-filter-type]").forEach((button) => {
@@ -186,27 +186,27 @@ function renderFeed() {
     .map((work) => {
       const lines = work.original_text.split(/\n+/).slice(0, 3).join(" / ");
       return `
-        <article id="work-card-${work.id}" class="work-card">
-          <div class="work-card__cover" style="background-image: url('${work.cover}');"></div>
+        <article id="work-card-${escapeHtml(work.id)}" class="work-card">
+          <div class="work-card__cover" style="background-image: url('${escapeAttr(work.cover)}');"></div>
           <div class="work-card__body">
             <div class="work-card__header">
               <div>
-                <h3>${work.title}</h3>
+                <h3>${escapeHtml(work.title)}</h3>
                 <div class="work-card__meta">
-                  <span class="meta-chip">${work.author_name}</span>
-                  <span class="meta-chip">${work.dynasty}</span>
-                  <span class="meta-chip">${work.genre}</span>
-                  <span class="meta-chip">${work.textbook_stage}</span>
+                  <span class="meta-chip">${escapeHtml(work.author_name)}</span>
+                  <span class="meta-chip">${escapeHtml(work.dynasty)}</span>
+                  <span class="meta-chip">${escapeHtml(work.genre)}</span>
+                  <span class="meta-chip">${escapeHtml(work.textbook_stage)}</span>
                 </div>
               </div>
-              <span class="meta-chip">难度 ${work.difficulty_level}</span>
+              <span class="meta-chip">难度 ${escapeHtml(String(work.difficulty_level))}</span>
             </div>
-            <p class="work-card__summary">${work.background_text}</p>
-            <p class="work-card__summary"><strong>原文速览：</strong>${lines}</p>
-            <div class="tag-row">${work.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}</div>
+            <p class="work-card__summary">${escapeHtml(work.background_text)}</p>
+            <p class="work-card__summary"><strong>原文速览：</strong>${escapeHtml(lines)}</p>
+            <div class="tag-row">${work.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
             <div class="work-card__actions">
-              <button class="button button--primary" data-action="open" data-id="${work.id}">打开详情</button>
-              <button class="button button--ghost" data-action="quiz" data-id="${work.id}">直接做题</button>
+              <button class="button button--primary" data-action="open" data-id="${escapeAttr(work.id)}">打开详情</button>
+              <button class="button button--ghost" data-action="quiz" data-id="${escapeAttr(work.id)}">直接做题</button>
             </div>
           </div>
         </article>
@@ -248,20 +248,20 @@ function renderDetail(focusQuiz = false) {
 
   elements.detailPanel.className = "panel detail-panel";
   elements.detailPanel.innerHTML = `
-    <div class="detail-cover" style="background-image: url('${work.cover}');"></div>
+    <div class="detail-cover" style="background-image: url('${escapeAttr(work.cover)}');"></div>
     <div class="detail-head">
       <div class="detail-actions">
-        <span class="meta-chip">${work.collection}</span>
-        <span class="meta-chip">${work.theme_label}</span>
-        <span class="meta-chip">${work.textbook_stage}</span>
+        <span class="meta-chip">${escapeHtml(work.collection)}</span>
+        <span class="meta-chip">${escapeHtml(work.theme_label)}</span>
+        <span class="meta-chip">${escapeHtml(work.textbook_stage)}</span>
       </div>
-      <h3>${work.title}</h3>
-      <p>${work.author_name} · ${work.dynasty} · ${work.genre}</p>
+      <h3>${escapeHtml(work.title)}</h3>
+      <p>${escapeHtml(work.author_name)} · ${escapeHtml(work.dynasty)} · ${escapeHtml(work.genre)}</p>
     </div>
 
     <div class="detail-actions">
-      ${prevNext.prev ? `<button class="button button--ghost" data-nav-id="${prevNext.prev.id}">上一篇 · ${prevNext.prev.title}</button>` : ""}
-      ${prevNext.next ? `<button class="button button--ghost" data-nav-id="${prevNext.next.id}">下一篇 · ${prevNext.next.title}</button>` : ""}
+      ${prevNext.prev ? `<button class="button button--ghost" data-nav-id="${escapeAttr(prevNext.prev.id)}">上一篇 · ${escapeHtml(prevNext.prev.title)}</button>` : ""}
+      ${prevNext.next ? `<button class="button button--ghost" data-nav-id="${escapeAttr(prevNext.next.id)}">下一篇 · ${escapeHtml(prevNext.next.title)}</button>` : ""}
     </div>
 
     <section class="detail-section">
@@ -276,18 +276,18 @@ function renderDetail(focusQuiz = false) {
 
     <section class="detail-section author-card">
       <h4>作者卡片</h4>
-      <p>${work.author_summary}</p>
-      <div class="tag-row">${work.historical_refs.map((item) => `<span class="tag">${item}</span>`).join("")}</div>
+      <p>${escapeHtml(work.author_summary)}</p>
+      <div class="tag-row">${work.historical_refs.map((item) => `<span class="tag">${escapeHtml(item)}</span>`).join("")}</div>
     </section>
 
     <section class="detail-section">
       <h4>创作背景</h4>
-      <p>${work.background_text}</p>
+      <p>${escapeHtml(work.background_text)}</p>
     </section>
 
     <section class="detail-section">
       <h4>学习提示</h4>
-      <p>${work.appreciation_text}</p>
+      <p>${escapeHtml(work.appreciation_text)}</p>
     </section>
 
     <section class="detail-section">
@@ -296,7 +296,7 @@ function renderDetail(focusQuiz = false) {
         ? `<ul class="related-list">${relatedWorks
             .map(
               ({ relation, work: related }) =>
-                `<li><a class="related-link" href="#" data-related-id="${related.id}">${related.title}</a> · ${related.author_name} · ${relation.relation_type}</li>`
+                `<li><a class="related-link" href="#" data-related-id="${escapeAttr(related.id)}">${escapeHtml(related.title)}</a> · ${escapeHtml(related.author_name)} · ${escapeHtml(relation.relation_type)}</li>`
             )
             .join("")}</ul>`
         : `<p>这篇作品的相关推荐还在补全中。</p>`}
@@ -307,9 +307,9 @@ function renderDetail(focusQuiz = false) {
     <section class="detail-section">
       <h4>数据来源</h4>
       <ul class="source-list">
-        <li>原文来源：${work.source_name}</li>
-        <li>专题归档：${work.source_collection}</li>
-        <li><a class="related-link" href="${work.source_url}" target="_blank" rel="noreferrer">查看源文件路径</a></li>
+        <li>原文来源：${escapeHtml(work.source_name)}</li>
+        <li>专题归档：${escapeHtml(work.source_collection)}</li>
+        <li><a class="related-link" href="${escapeAttr(work.source_url)}" target="_blank" rel="noreferrer">查看源文件路径</a></li>
       </ul>
     </section>
   `;
@@ -354,12 +354,12 @@ function renderQuizSection(work, focusQuiz) {
             return `
               <article class="quiz-card">
                 <span class="quiz-chip">第 ${index + 1} 题</span>
-                <div class="quiz-stem">${quiz.stem}</div>
+                <div class="quiz-stem">${escapeHtml(quiz.stem)}</div>
                 <div class="quiz-options">
                   ${quiz.options
                     .map((option) => {
                       const selectedClass = selected === option ? "is-selected" : "";
-                      return `<button class="quiz-option ${selectedClass}" data-quiz-id="${quiz.id}" data-option="${option}">${option}</button>`;
+                      return `<button class="quiz-option ${selectedClass}" data-quiz-id="${escapeAttr(quiz.id)}" data-option="${escapeAttr(option)}">${escapeHtml(option)}</button>`;
                     })
                     .join("")}
                 </div>
@@ -423,11 +423,21 @@ function closeCelebration() {
 }
 
 function escapeHtml(value) {
-  return String(value)
+  return String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
+    .replaceAll("\"", "&quot;")
     .replaceAll("\n", "<br />");
+}
+
+function escapeAttr(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll("\"", "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
 init().catch((error) => {

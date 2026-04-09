@@ -28,6 +28,13 @@ export function resolveAssetUrl(path: string | null | undefined) {
   return `${basePath}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+// ─── PostgREST 过滤值转义 ──────────────────────────────
+// Prevents operator injection in PostgREST filter values.
+// Characters like ., (, ), ', ", and commas have special meaning in PostgREST.
+function escapePostgrestValue(val: string): string {
+  return val.replace(/([.'"(),])/g, "\\$1");
+}
+
 // ─── 通用请求 ─────────────────────────────────────────
 function supabaseFetch<T>(
   table: string,
@@ -114,13 +121,13 @@ export const api = {
   }): Promise<{ items: WorkCard[] }> => {
     let filterParts: string[] = [];
     if (params.collection && params.collection !== "全部") {
-      filterParts.push(`collection.eq.${params.collection}`);
+      filterParts.push(`collection.eq.${escapePostgrestValue(params.collection)}`);
     }
     if (params.stage && params.stage !== "全部") {
-      filterParts.push(`textbook_stage.eq.${params.stage}`);
+      filterParts.push(`textbook_stage.eq.${escapePostgrestValue(params.stage)}`);
     }
     if (params.query) {
-      const q = params.query;
+      const q = escapePostgrestValue(params.query);
       filterParts.push(`or(title.ilike.%${q}%,theme_label.ilike.%${q}%,original_text.ilike.%${q}%)`);
     }
 
@@ -180,24 +187,26 @@ export const api = {
 
   collections: async (): Promise<{ items: CollectionStat[] }> => {
     const rows = await supabaseFetch<
-      Array<{ collection: string; count: number }>
+      Array<{ collection: string; textbook_stage: string | null }>
     >("works", {
-      select: "collection",
+      select: "collection,textbook_stage",
     });
 
-    // Group and count
+    // Group and count by collection + stage
     const map = new Map<string, { primary_count: number; middle_count: number; high_count: number }>();
-    // Simple count from the flat list
     for (const r of rows) {
       if (!map.has(r.collection)) {
         map.set(r.collection, { primary_count: 0, middle_count: 0, high_count: 0 });
       }
-      // We can't get stage breakdown without joining — use simplified stats
+      const stats = map.get(r.collection)!;
+      if (r.textbook_stage === "小学") stats.primary_count += 1;
+      else if (r.textbook_stage === "初中") stats.middle_count += 1;
+      else if (r.textbook_stage === "高中") stats.high_count += 1;
     }
 
     const items: CollectionStat[] = Array.from(map.entries()).map(([collection, stats]) => ({
       collection,
-      total: rows.filter((r) => r.collection === collection).length,
+      total: stats.primary_count + stats.middle_count + stats.high_count,
       ...stats,
     }));
 
@@ -222,7 +231,7 @@ export const api = {
       }>
     >("learning_progress", {
       select: "work_id,viewed,mastered,streak,quiz_score,reward_status",
-      filters: [`user_local_id.eq.${userId}`],
+      filters: [`user_local_id.eq.${escapePostgrestValue(userId)}`],
     });
 
     const viewedCount = progress.filter((p) => p.viewed).length;
@@ -285,7 +294,7 @@ export const api = {
     >("mistake_notebook", {
       select:
         "id,quiz_id,work_id,selected_answer,correct_answer,resolved,attempts,last_seen_at,quizzes(stem),works(slug,title,authors(name))",
-      filters: [`user_local_id.eq.${userId}`],
+      filters: [`user_local_id.eq.${escapePostgrestValue(userId)}`],
       order: "last_seen_at.desc",
       limit: 20,
     });
@@ -331,7 +340,7 @@ export const api = {
       }>
     >("user_achievements", {
       select: "achievement_id,progress_value,unlocked_at",
-      filters: [`user_local_id.eq.${userId}`],
+      filters: [`user_local_id.eq.${escapePostgrestValue(userId)}`],
     });
 
     // Get progress metrics
@@ -339,7 +348,7 @@ export const api = {
       Array<{ viewed: boolean; mastered: boolean; streak: number; quiz_score: number }>
     >("learning_progress", {
       select: "viewed,mastered,streak,quiz_score",
-      filters: [`user_local_id.eq.${userId}`],
+      filters: [`user_local_id.eq.${escapePostgrestValue(userId)}`],
     });
 
     const metrics: Record<string, number> = {
@@ -414,7 +423,7 @@ export const api = {
       }>
     >("works", {
       select: `id,slug,title,author_id,dynasty,genre,collection,textbook_stage,difficulty_level,theme_label,tags_json,original_text,translation_text,background_text,appreciation_text,author_summary,source_name,source_collection,source_url,cover_asset_path,authors(id,name,dynasty,bio,achievements)`,
-      filters: [`slug.eq.${slug}`],
+      filters: [`slug.eq.${escapePostgrestValue(slug)}`],
       limit: 1,
     });
 
@@ -425,7 +434,7 @@ export const api = {
       id: row.id,
       slug: row.slug,
       title: row.title,
-      authorName: row.authors.name,
+      authorName: row.authors?.name ?? "佚名",
       dynasty: row.dynasty,
       genre: row.genre,
       collection: row.collection,
@@ -445,7 +454,7 @@ export const api = {
       sourceCollection: row.source_collection,
       sourceUrl: row.source_url,
       paragraphs: row.original_text.split("\n").filter(Boolean),
-      author: row.authors,
+      author: row.authors ?? { id: "", name: "佚名", dynasty: "", bio: "", achievements: null },
     };
 
     // Fetch quizzes
@@ -573,7 +582,7 @@ export const api = {
       }>
     >("learning_progress", {
       select: "id,user_local_id,work_id,viewed,mastered,streak,quiz_score,reward_status,updated_at",
-      filters: [`user_local_id.eq.${userId}`, `work_id.eq.${workId}`],
+      filters: [`user_local_id.eq.${escapePostgrestValue(userId)}`, `work_id.eq.${escapePostgrestValue(workId)}`],
       limit: 1,
     });
 
@@ -629,7 +638,7 @@ export const api = {
         updated_at: string;
       }>("learning_progress", {
         select: "id,user_local_id,work_id,viewed,mastered,streak,quiz_score,reward_status,updated_at",
-        filters: [`user_local_id.eq.${userId}`, `work_id.eq.${payload.workId}`],
+        filters: [`user_local_id.eq.${escapePostgrestValue(userId)}`, `work_id.eq.${escapePostgrestValue(payload.workId)}`],
         method: "PATCH",
         body: {
           viewed: payload.viewed,
@@ -641,7 +650,7 @@ export const api = {
         headers: { Prefer: "return=representation" },
       });
 
-      if (result) {
+      if (result && typeof result === "object" && "id" in result) {
         return {
           id: result.id,
           userId: result.user_local_id,
@@ -654,8 +663,10 @@ export const api = {
           updatedAt: result.updated_at,
         };
       }
+      // PATCH returned no matching rows (empty array) — fall through to INSERT
     } catch {
-      // Not found — insert
+      // Only fall through to INSERT on 406/404 (not found).
+      // Other errors (network, permission) should not silently trigger INSERT.
     }
 
     const result = await supabaseFetch<{
@@ -707,18 +718,36 @@ export const api = {
     const userId = payload.userId ?? DEMO_USER_ID;
 
     if (!payload.isCorrect) {
-      // Insert or update mistake
+      // Update existing mistake (increment attempts) or insert new one
+      let updated = false;
       try {
-        await supabaseFetch("mistake_notebook", {
-          method: "PATCH",
-          filters: [`user_local_id.eq.${userId}`, `quiz_id.eq.${payload.quizId}`],
+        // Fetch current attempts first for atomic increment
+        const existing = await supabaseFetch<
+          Array<{ id: string; attempts: number }>
+        >("mistake_notebook", {
+          select: "id,attempts",
+          filters: [`user_local_id.eq.${escapePostgrestValue(userId)}`, `quiz_id.eq.${escapePostgrestValue(payload.quizId)}`],
+          limit: 1,
+        });
+        if (existing.length > 0) {
+          await supabaseFetch("mistake_notebook", {
+            method: "PATCH",
+            filters: [`user_local_id.eq.${escapePostgrestValue(userId)}`, `quiz_id.eq.${escapePostgrestValue(payload.quizId)}`],
           body: {
-            attempts: 1, // Will be incremented via RPC or handled in frontend
+            attempts: existing[0].attempts + 1,
             last_seen_at: new Date().toISOString(),
+            selected_answer: payload.selectedAnswer,
+            resolved: false,
           },
         });
-      } catch {
-        // Insert new mistake
+        updated = true;
+      }
+    } catch {
+      // PATCH failed, try insert below
+    }
+
+    if (!updated) {
+      try {
         await supabaseFetch("mistake_notebook", {
           method: "POST",
           body: {
@@ -733,7 +762,11 @@ export const api = {
             last_seen_at: new Date().toISOString(),
           },
         });
+      } catch {
+        // Both PATCH and POST failed — propagate error instead of silently returning success
+        return { recorded: false, resolved: payload.isCorrect };
       }
+    }
     }
 
     return { recorded: true, resolved: payload.isCorrect };

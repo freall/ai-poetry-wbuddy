@@ -45,13 +45,20 @@ export function WorkDetailClient({ slug }: { slug: string }) {
 
   const updateProgress = async (partial: Partial<WorkProgress>) => {
     if (!payload) return;
+    // Use setProgress callback to avoid stale closure over `progress`
+    const freshProgress = await new Promise<WorkProgress | null>((resolve) => {
+      setProgress((prev) => {
+        resolve(prev);
+        return prev;
+      });
+    });
     const nextProgress = await api.saveProgress({
       workId: payload.work.id,
-      viewed: partial.viewed ?? progress?.viewed ?? true,
-      mastered: partial.mastered ?? progress?.mastered ?? false,
-      streak: partial.streak ?? progress?.streak ?? 1,
-      quizScore: partial.quizScore ?? progress?.quizScore ?? 0,
-      rewardStatus: partial.rewardStatus ?? progress?.rewardStatus ?? "bronze",
+      viewed: partial.viewed ?? freshProgress?.viewed ?? true,
+      mastered: partial.mastered ?? freshProgress?.mastered ?? false,
+      streak: partial.streak ?? freshProgress?.streak ?? 1,
+      quizScore: partial.quizScore ?? freshProgress?.quizScore ?? 0,
+      rewardStatus: partial.rewardStatus ?? freshProgress?.rewardStatus ?? "bronze",
     });
     setProgress(nextProgress);
   };
