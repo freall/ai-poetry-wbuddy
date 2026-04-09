@@ -375,6 +375,35 @@ li {
 
 .work-card {
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.work-card-link {
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.work-card-link:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 48px rgba(31, 48, 71, 0.18);
+}
+
+.work-card-link:active {
+  transform: translateY(-1px);
+}
+
+.work-excerpt {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 8px 0;
 }
 
 .cover-shell {
@@ -401,6 +430,20 @@ li {
 
 .work-card-body {
   padding: 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.work-card-body h3 {
+  margin: 8px 0 4px;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.work-card-body .muted {
+  font-size: 13px;
+  margin: 0 0 4px;
 }
 
 .work-card-body h3,

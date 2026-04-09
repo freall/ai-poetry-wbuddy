@@ -9,6 +9,7 @@ import type {
   QuizItem,
   WorkDetail,
 } from "./types";
+import { t2s, t2sOrEmpty, t2sArray, t2sSlug } from "./t2s";
 
 export const DEMO_USER_ID = "demo-user";
 
@@ -162,23 +163,23 @@ export const api = {
       const excerpt = r.original_text.replace(/\n/g, " ").slice(0, 60) + "…";
       return {
         id: r.id,
-        slug: r.slug,
-        title: r.title,
-        authorName: r.authors?.[0]?.name ?? "佚名",
-        dynasty: r.dynasty,
-        genre: r.genre,
-        collection: r.collection,
-        textbookStage: r.textbook_stage,
+        slug: t2sSlug(r.slug),
+        title: t2sOrEmpty(r.title),
+        authorName: t2sOrEmpty(r.authors?.[0]?.name) || "佚名",
+        dynasty: t2sOrEmpty(r.dynasty),
+        genre: t2sOrEmpty(r.genre),
+        collection: t2sOrEmpty(r.collection),
+        textbookStage: t2s(r.textbook_stage),
         difficultyLevel: r.difficulty_level,
-        themeLabel: r.theme_label,
-        tags: Array.isArray(r.tags_json) ? r.tags_json : [],
+        themeLabel: t2s(r.theme_label),
+        tags: t2sArray(Array.isArray(r.tags_json) ? r.tags_json : []),
         coverAssetPath: r.cover_asset_path,
-        originalText: r.original_text,
-        backgroundText: r.background_text,
-        authorSummary: r.author_summary,
+        originalText: t2sOrEmpty(r.original_text),
+        backgroundText: t2s(r.background_text),
+        authorSummary: t2s(r.author_summary),
         quizCount: 0,
         relationCount: 0,
-        excerpt,
+        excerpt: t2sOrEmpty(excerpt),
       };
     });
 
@@ -195,13 +196,15 @@ export const api = {
     // Group and count by collection + stage
     const map = new Map<string, { primary_count: number; middle_count: number; high_count: number }>();
     for (const r of rows) {
-      if (!map.has(r.collection)) {
-        map.set(r.collection, { primary_count: 0, middle_count: 0, high_count: 0 });
+      const coll = t2sOrEmpty(r.collection);
+      const stage = t2s(r.textbook_stage);
+      if (!map.has(coll)) {
+        map.set(coll, { primary_count: 0, middle_count: 0, high_count: 0 });
       }
-      const stats = map.get(r.collection)!;
-      if (r.textbook_stage === "小学") stats.primary_count += 1;
-      else if (r.textbook_stage === "初中") stats.middle_count += 1;
-      else if (r.textbook_stage === "高中") stats.high_count += 1;
+      const stats = map.get(coll)!;
+      if (stage === "小学") stats.primary_count += 1;
+      else if (stage === "初中") stats.middle_count += 1;
+      else if (stage === "高中") stats.high_count += 1;
     }
 
     const items: CollectionStat[] = Array.from(map.entries()).map(([collection, stats]) => ({
@@ -253,10 +256,11 @@ export const api = {
     // Collection breakdown
     const collectionMap = new Map<string, { total: number; viewed: number; mastered: number }>();
     for (const w of allWorks) {
-      if (!collectionMap.has(w.collection)) {
-        collectionMap.set(w.collection, { total: 0, viewed: 0, mastered: 0 });
+      const coll = t2sOrEmpty(w.collection);
+      if (!collectionMap.has(coll)) {
+        collectionMap.set(coll, { total: 0, viewed: 0, mastered: 0 });
       }
-      const entry = collectionMap.get(w.collection)!;
+      const entry = collectionMap.get(coll)!;
       entry.total += 1;
       if (viewedSet.has(w.id)) entry.viewed += 1;
       if (masteredSet.has(w.id)) entry.mastered += 1;
@@ -303,12 +307,12 @@ export const api = {
       id: r.id,
       quizId: r.quiz_id,
       workId: r.work_id,
-      slug: r.works?.[0]?.slug ?? "",
-      title: r.works?.[0]?.title ?? "未知作品",
-      authorName: r.works?.[0]?.authors?.[0]?.name ?? "佚名",
-      stem: r.quizzes?.[0]?.stem ?? "",
-      selectedAnswer: r.selected_answer,
-      correctAnswer: r.correct_answer,
+      slug: t2sSlug(r.works?.[0]?.slug ?? ""),
+      title: t2sOrEmpty(r.works?.[0]?.title) || "未知作品",
+      authorName: t2sOrEmpty(r.works?.[0]?.authors?.[0]?.name) || "佚名",
+      stem: t2sOrEmpty(r.quizzes?.[0]?.stem ?? ""),
+      selectedAnswer: t2sOrEmpty(r.selected_answer),
+      correctAnswer: t2sOrEmpty(r.correct_answer),
       resolved: r.resolved,
       attempts: r.attempts,
       lastSeenAt: r.last_seen_at,
@@ -373,11 +377,11 @@ export const api = {
       const isUnlocked = currentValue >= def.threshold;
       return {
         id: def.id,
-        title: def.title,
-        description: def.description,
+        title: t2sOrEmpty(def.title),
+        description: t2sOrEmpty(def.description),
         icon: def.icon,
         metric: def.metric,
-        metricLabel: metricLabels[def.metric] ?? def.metric,
+        metricLabel: t2sOrEmpty(metricLabels[def.metric] ?? def.metric),
         threshold: def.threshold,
         theme: def.theme,
         progress: currentValue,
@@ -432,29 +436,37 @@ export const api = {
 
     const work: WorkDetail = {
       id: row.id,
-      slug: row.slug,
-      title: row.title,
-      authorName: row.authors?.name ?? "佚名",
-      dynasty: row.dynasty,
-      genre: row.genre,
-      collection: row.collection,
-      textbookStage: row.textbook_stage,
+      slug: t2sSlug(row.slug),
+      title: t2sOrEmpty(row.title),
+      authorName: t2sOrEmpty(row.authors?.name) || "佚名",
+      dynasty: t2sOrEmpty(row.dynasty),
+      genre: t2sOrEmpty(row.genre),
+      collection: t2sOrEmpty(row.collection),
+      textbookStage: t2s(row.textbook_stage),
       difficultyLevel: row.difficulty_level,
-      themeLabel: row.theme_label,
-      tags: Array.isArray(row.tags_json) ? row.tags_json : [],
+      themeLabel: t2s(row.theme_label),
+      tags: t2sArray(Array.isArray(row.tags_json) ? row.tags_json : []),
       coverAssetPath: row.cover_asset_path,
-      originalText: row.original_text,
-      backgroundText: row.background_text,
-      authorSummary: row.author_summary,
+      originalText: t2sOrEmpty(row.original_text),
+      backgroundText: t2s(row.background_text),
+      authorSummary: t2s(row.author_summary),
       quizCount: 0,
       relationCount: 0,
-      translationText: row.translation_text,
-      appreciationText: row.appreciation_text,
-      sourceName: row.source_name,
-      sourceCollection: row.source_collection,
+      translationText: t2s(row.translation_text),
+      appreciationText: t2s(row.appreciation_text),
+      sourceName: t2s(row.source_name),
+      sourceCollection: t2s(row.source_collection),
       sourceUrl: row.source_url,
-      paragraphs: row.original_text.split("\n").filter(Boolean),
-      author: row.authors ?? { id: "", name: "佚名", dynasty: "", bio: "", achievements: null },
+      paragraphs: t2sOrEmpty(row.original_text).split("\n").filter(Boolean),
+      author: row.authors
+        ? {
+            id: row.authors.id,
+            name: t2sOrEmpty(row.authors.name) || "佚名",
+            dynasty: t2sOrEmpty(row.authors.dynasty),
+            bio: t2sOrEmpty(row.authors.bio),
+            achievements: t2s(row.authors.achievements),
+          }
+        : { id: "", name: "佚名", dynasty: "", bio: "", achievements: null },
     };
 
     // Fetch quizzes
@@ -479,10 +491,10 @@ export const api = {
       id: q.id,
       workId: q.work_id,
       questionType: q.question_type,
-      stem: q.stem,
-      options: Array.isArray(q.options_json) ? q.options_json : [],
-      answer: q.answer,
-      explanation: q.explanation,
+      stem: t2sOrEmpty(q.stem),
+      options: t2sArray(Array.isArray(q.options_json) ? q.options_json : []),
+      answer: t2sOrEmpty(q.answer),
+      explanation: t2s(q.explanation),
       difficulty: q.difficulty,
     }));
 
@@ -537,27 +549,27 @@ export const api = {
       const excerpt = (tw.original_text || "").replace(/\n/g, " ").slice(0, 60) + "…";
       return {
         relationId: r.id,
-        relationType: r.relation_type,
+        relationType: t2sOrEmpty(r.relation_type),
         score: r.score,
         work: {
           id: tw.id,
-          slug: tw.slug,
-          title: tw.title,
-          authorName: tw.authors?.[0]?.name ?? "佚名",
-          dynasty: tw.dynasty,
-          genre: tw.genre,
-          collection: tw.collection,
-          textbookStage: tw.textbook_stage,
+          slug: t2sSlug(tw.slug),
+          title: t2sOrEmpty(tw.title),
+          authorName: t2sOrEmpty(tw.authors?.[0]?.name) || "佚名",
+          dynasty: t2sOrEmpty(tw.dynasty),
+          genre: t2sOrEmpty(tw.genre),
+          collection: t2sOrEmpty(tw.collection),
+          textbookStage: t2s(tw.textbook_stage),
           difficultyLevel: tw.difficulty_level,
-          themeLabel: tw.theme_label,
-          tags: Array.isArray(tw.tags_json) ? tw.tags_json : [],
+          themeLabel: t2s(tw.theme_label),
+          tags: t2sArray(Array.isArray(tw.tags_json) ? tw.tags_json : []),
           coverAssetPath: tw.cover_asset_path,
-          originalText: tw.original_text,
-          backgroundText: tw.background_text,
-          authorSummary: tw.author_summary,
+          originalText: t2sOrEmpty(tw.original_text),
+          backgroundText: t2s(tw.background_text),
+          authorSummary: t2s(tw.author_summary),
           quizCount: 0,
           relationCount: 0,
-          excerpt,
+          excerpt: t2sOrEmpty(excerpt),
         },
       };
     }).filter(Boolean);

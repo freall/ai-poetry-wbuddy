@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Award, BookOpen, Flame, Search, Target } from "lucide-react";
+import { Award, BookOpen, Flame, Search, Target } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { api, resolveAssetUrl } from "../../lib/api";
@@ -217,7 +217,7 @@ export function HomeClient() {
 
         <div className="works-grid">
           {works.map((work) => (
-            <article key={work.id} className="work-card">
+            <Link key={work.id} href={`/works/${work.slug}`} className="work-card work-card-link">
               <div className="cover-shell">
                 {resolveAssetUrl(work.coverAssetPath) ? <img src={resolveAssetUrl(work.coverAssetPath) ?? undefined} alt={work.title} /> : <div className="cover-fallback">{work.title}</div>}
               </div>
@@ -230,7 +230,7 @@ export function HomeClient() {
                 <p className="muted">
                   {work.authorName} · {work.dynasty} · 难度 {work.difficultyLevel}
                 </p>
-                <p>{work.excerpt}</p>
+                <p className="work-excerpt">{work.excerpt}</p>
                 <div className="tag-row">
                   {work.tags.slice(0, 4).map((tag) => (
                     <span key={tag} className="tag-pill">
@@ -238,11 +238,8 @@ export function HomeClient() {
                     </span>
                   ))}
                 </div>
-                <Link href={`/works/${work.slug}`} className="inline-link">
-                  打开详情 <ArrowRight size={16} />
-                </Link>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </section>
