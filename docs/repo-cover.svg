@@ -1,0 +1,49 @@
+<svg width="1280" height="640" viewBox="0 0 1280 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f3c35" />
+      <stop offset="55%" stop-color="#235f53" />
+      <stop offset="100%" stop-color="#d0a266" />
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.95)" />
+      <stop offset="100%" stop-color="rgba(255,255,255,0.78)" />
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="640" rx="40" fill="url(#bg)" />
+  <circle cx="1088" cy="144" r="164" fill="rgba(255,255,255,0.1)" />
+  <circle cx="180" cy="528" r="132" fill="rgba(255,255,255,0.08)" />
+  <path d="M0 500 C 180 440, 360 420, 550 480 C 760 546, 920 600, 1280 520 V640 H0 Z" fill="rgba(255,255,255,0.12)" />
+
+  <g transform="translate(88 88)">
+    <rect x="0" y="0" width="560" height="464" rx="30" fill="url(#card)" />
+    <rect x="36" y="36" width="160" height="38" rx="19" fill="#d7efe7" />
+    <text x="116" y="61" text-anchor="middle" fill="#1f6a5d" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">v0.1.0 正式骨架</text>
+    <text x="36" y="136" fill="#182230" font-size="50" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">Classics</text>
+    <text x="36" y="198" fill="#182230" font-size="50" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">Learning Platform</text>
+    <text x="36" y="256" fill="#596273" font-size="24" font-family="PingFang SC, Microsoft YaHei, sans-serif">古诗词与古文学习平台 · 132 篇内容 · 搜索 / 进度 / 错题本 / 成就</text>
+    <rect x="36" y="304" width="220" height="108" rx="22" fill="#eff7f3" />
+    <rect x="274" y="304" width="250" height="108" rx="22" fill="#fff3e6" />
+    <text x="66" y="350" fill="#1f6a5d" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">正式前后端</text>
+    <text x="66" y="390" fill="#182230" font-size="36" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">Next.js + Fastify</text>
+    <text x="304" y="350" fill="#b26528" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">可持续扩展</text>
+    <text x="304" y="390" fill="#182230" font-size="36" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">SQLite 内容底座</text>
+    <text x="36" y="446" fill="#596273" font-size="20" font-family="PingFang SC, Microsoft YaHei, sans-serif">保留静态原型，同时补齐开放许可证、README、仓库封面和正式应用骨架。</text>
+  </g>
+
+  <g transform="translate(706 92)">
+    <rect x="0" y="0" width="492" height="450" rx="34" fill="rgba(255,255,255,0.16)" stroke="rgba(255,255,255,0.35)" />
+    <rect x="32" y="32" width="428" height="46" rx="16" fill="rgba(255,255,255,0.82)" />
+    <rect x="32" y="106" width="132" height="280" rx="24" fill="rgba(255,255,255,0.9)" />
+    <rect x="182" y="106" width="278" height="118" rx="24" fill="rgba(255,255,255,0.9)" />
+    <rect x="182" y="242" width="278" height="144" rx="24" fill="rgba(255,255,255,0.9)" />
+    <rect x="32" y="404" width="428" height="18" rx="9" fill="rgba(255,255,255,0.42)" />
+    <text x="56" y="60" fill="#1d3e37" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">正式首页：搜索、进度、错题本、成就面板</text>
+    <text x="58" y="144" fill="#21584c" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">132 篇作品</text>
+    <text x="58" y="176" fill="#182230" font-size="30" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">作品库</text>
+    <text x="206" y="148" fill="#b26528" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">学习进度</text>
+    <text x="206" y="182" fill="#182230" font-size="28" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">8 篇已浏览 / 3 篇掌握</text>
+    <text x="206" y="286" fill="#21584c" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">成就系统</text>
+    <text x="206" y="320" fill="#182230" font-size="28" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">3 枚徽章已解锁</text>
+  </g>
+</svg>

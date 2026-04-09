@@ -1,0 +1,31 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="900" rx="34" fill="#f5f1e8" />
+  <rect x="32" y="32" width="1376" height="836" rx="28" fill="#ffffff" stroke="#e8dfd0" />
+  <rect x="72" y="92" width="420" height="332" rx="28" fill="url(#cover)" />
+  <rect x="524" y="92" width="844" height="332" rx="28" fill="#fbfaf8" stroke="#ede4d7" />
+  <rect x="72" y="456" width="648" height="364" rx="28" fill="#fbfaf8" stroke="#ede4d7" />
+  <rect x="752" y="456" width="616" height="364" rx="28" fill="#fbfaf8" stroke="#ede4d7" />
+  <text x="108" y="156" fill="#ffffff" font-size="22" font-family="PingFang SC, Microsoft YaHei, sans-serif">作品封面</text>
+  <text x="108" y="218" fill="#ffffff" font-size="60" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">春晓</text>
+  <text x="108" y="266" fill="#f0fdf4" font-size="28" font-family="PingFang SC, Microsoft YaHei, sans-serif">孟浩然 · 唐 · 五言绝句</text>
+  <text x="560" y="150" fill="#1f6a5d" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">学习状态面板</text>
+  <text x="560" y="202" fill="#182230" font-size="56" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">原文 / 背景 / 练习 一屏完成</text>
+  <text x="560" y="248" fill="#596273" font-size="24" font-family="PingFang SC, Microsoft YaHei, sans-serif">可记录已浏览、已掌握，提交随堂练习后自动写入进度与错题本。</text>
+  <rect x="560" y="290" width="164" height="44" rx="22" fill="#d7efe7" />
+  <rect x="742" y="290" width="164" height="44" rx="22" fill="#fff3e6" />
+  <rect x="924" y="290" width="164" height="44" rx="22" fill="#eef2ff" />
+  <text x="596" y="318" fill="#1f6a5d" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">已浏览</text>
+  <text x="778" y="318" fill="#b26528" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">已掌握</text>
+  <text x="960" y="318" fill="#44559d" font-size="18" font-family="PingFang SC, Microsoft YaHei, sans-serif">奖励等级</text>
+  <text x="108" y="518" fill="#182230" font-size="28" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">原文与译文卡片</text>
+  <text x="108" y="568" fill="#596273" font-size="22" font-family="PingFang SC, Microsoft YaHei, sans-serif">春眠不觉晓，处处闻啼鸟。</text>
+  <text x="108" y="608" fill="#596273" font-size="22" font-family="PingFang SC, Microsoft YaHei, sans-serif">夜来风雨声，花落知多少。</text>
+  <text x="788" y="518" fill="#182230" font-size="28" font-weight="700" font-family="PingFang SC, Microsoft YaHei, sans-serif">随堂练习与相关推荐</text>
+  <text x="788" y="568" fill="#596273" font-size="22" font-family="PingFang SC, Microsoft YaHei, sans-serif">提交答案后自动同步学习进度，并把错题写入错题本。</text>
+  <defs>
+    <linearGradient id="cover" x1="72" y1="92" x2="492" y2="424" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#163f38" />
+      <stop offset="1" stop-color="#5075c2" />
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,0 +1,41 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Node / Next
+node_modules/
+.next/
+dist/
+coverage/
+
+# Env
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Local runtime output
+out/
+.tmp/
+
+# Generated slugs (rebuilt on prebuild)
+apps/web/slugs.json
+apps/web/public/images/
+
+# Raw downloaded source material and local clones
+/data/raw/
+
+# Optional local databases outside committed deliverables
+*.sqlite
+*.db-shm
+*.db-wal

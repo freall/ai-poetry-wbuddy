@@ -1,0 +1,24 @@
+{
+  "name": "classics-learning-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "一个面向中小学生的古诗词与古文学习平台，包含内容构建脚本、正式 Web 前端与 Fastify API。",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build:data": "python3 scripts/build_full_library.py && python3 scripts/build_app_db.py",
+    "dev": "concurrently -n API,WEB -c cyan,magenta \"npm run dev --workspace @classics/api\" \"npm run dev --workspace @classics/web\"",
+    "dev:api": "npm run dev --workspace @classics/api",
+    "dev:web": "npm run dev --workspace @classics/web",
+    "build": "npm run build:data && npm run build --workspace @classics/api && npm run build --workspace @classics/web",
+    "typecheck": "npm run typecheck --workspace @classics/api && npm run typecheck --workspace @classics/web"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=23.0.0"
+  },
+  "license": "MIT"
+}
