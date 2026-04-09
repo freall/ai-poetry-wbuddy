@@ -8,7 +8,7 @@ const path = require('path');
 const https = require('https');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://kldrdqxtwcufrjcgrrbj.supabase.co';
-const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SECRET_KEY || '';
 
 const datasetPath = path.resolve(__dirname, '../data/processed/classics-library.json');
 const dataset = JSON.parse(fs.readFileSync(datasetPath, 'utf-8'));
@@ -16,7 +16,7 @@ const dataset = JSON.parse(fs.readFileSync(datasetPath, 'utf-8'));
 function supabaseRequest(table, method, body) {
   return new Promise((resolve, reject) => {
     if (!SERVICE_ROLE_KEY) {
-      console.error('❌ SUPABASE_SERVICE_ROLE_KEY environment variable is required');
+      console.error('❌ SUPABASE_SECRET_KEY environment variable is required');
       process.exit(1);
     }
     

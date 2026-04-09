@@ -5,7 +5,7 @@
 
 在对 `ai-poetry-wbuddy` 代码库进行安全审计时，发现多处硬编码的 Supabase 密钥，包括：
 
-1. **Service Role Key** 硬编码在脚本文件中
+1. **Secret Key**（原 Service Role Key）硬编码在脚本文件中
 2. **Publishable Key**（原 Anon Key）硬编码在前端 API 代码中
 3. **GitHub Actions 配置文件**中包含硬编码密钥
 4. **编译后的静态文件**中嵌入了密钥
@@ -13,8 +13,8 @@
 ## ✅ 已实施的修复
 
 ### 代码层修复
-- ✅ 移除所有硬编码的 `SUPABASE_PUBLISHABLE_KEY`（原 ANON_KEY）和 `SERVICE_ROLE_KEY`
-- ✅ 改为使用环境变量：`process.env.SUPABASE_SERVICE_ROLE_KEY`
+- ✅ 移除所有硬编码密钥
+- ✅ 改为使用环境变量：`process.env.SUPABASE_SECRET_KEY`
 - ✅ 改为使用环境变量：`process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - ✅ 删除包含密钥的编译文件（`.next/`, `out/` 目录）
 
@@ -39,7 +39,7 @@
 ```bash
 cp .env.example .env.local
 # 编辑 .env.local，填入：
-# SUPABASE_SERVICE_ROLE_KEY=你的ServiceRoleKey
+# SUPABASE_SECRET_KEY=你的SecretKey
 # NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=你的PublishableKey
 ```
 
@@ -60,7 +60,7 @@ cp .env.example .env.local
 ```env
 # .env.local（本地开发）
 SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your_service_key_here
+SUPABASE_SECRET_KEY=your_secret_key_here
 
 # .env.production（部署）
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co

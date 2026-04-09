@@ -479,40 +479,51 @@ export const api = {
 
     work.quizCount = quizzes.length;
 
-    // Fetch relations
+    // Fetch relations — 分两步查询避免 PostgREST 外键歧义
+    // (relations 有 from_work_id 和 to_work_id 两个外键都指向 works)
     const relRows = await supabaseFetch<
       Array<{
         id: string;
         relation_type: string;
         score: number;
-        to_works: Array<{
-          id: string;
-          slug: string;
-          title: string;
-          dynasty: string;
-          genre: string;
-          collection: string;
-          textbook_stage: string | null;
-          difficulty_level: number;
-          theme_label: string | null;
-          tags_json: string[];
-          original_text: string;
-          background_text: string | null;
-          author_summary: string | null;
-          cover_asset_path: string | null;
-          authors: Array<{ name: string }>;
-        }>;
+        to_work_id: string;
       }>
     >("relations", {
-      select:
-        "id,relation_type,score,to_works(id,slug,title,dynasty,genre,collection,textbook_stage,difficulty_level,theme_label,tags_json,original_text,background_text,author_summary,cover_asset_path,authors(name))",
+      select: "id,relation_type,score,to_work_id",
       filters: [`from_work_id.eq.${row.id}`],
       order: "score.desc",
       limit: 6,
     });
 
+    // Fetch recommended works by their IDs
+    const toWorkIds = relRows.map((r) => r.to_work_id);
+    let recommendedWorks: Array<{
+      id: string;
+      slug: string;
+      title: string;
+      dynasty: string;
+      genre: string;
+      collection: string;
+      textbook_stage: string | null;
+      difficulty_level: number;
+      theme_label: string | null;
+      tags_json: string[];
+      original_text: string;
+      background_text: string | null;
+      author_summary: string | null;
+      cover_asset_path: string | null;
+      authors: Array<{ name: string }>;
+    }> = [];
+    if (toWorkIds.length > 0) {
+      recommendedWorks = await supabaseFetch<typeof recommendedWorks>("works", {
+        select: "id,slug,title,dynasty,genre,collection,textbook_stage,difficulty_level,theme_label,tags_json,original_text,background_text,author_summary,cover_asset_path,authors(name)",
+        filters: [`id.in.(${toWorkIds.join(",")})`],
+      });
+    }
+    const worksMap = new Map(recommendedWorks.map((w) => [w.id, w]));
+
     const recommendations = relRows.map((r) => {
-      const tw = r.to_works?.[0];
+      const tw = worksMap.get(r.to_work_id);
       if (!tw) return null;
       const excerpt = (tw.original_text || "").replace(/\n/g, " ").slice(0, 60) + "…";
       return {
