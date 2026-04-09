@@ -15,8 +15,8 @@ export const DEMO_USER_ID = "demo-user";
 // ─── Supabase 配置 ─────────────────────────────────────
 export const SUPABASE_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://kldrdqxtwcufrjcgrrbj.supabase.co";
-export const SUPABASE_ANON_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+export const SUPABASE_PUBLISHABLE_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
 
 // ─── 资源 URL 解析 ─────────────────────────────────────
 // GitHub Pages 部署后，静态资源在 basePath 下
@@ -76,8 +76,8 @@ function supabaseFetch<T>(
   return fetch(url, {
     method,
     headers: {
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      apikey: SUPABASE_PUBLISHABLE_KEY,
+      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
       "Content-Type": "application/json",
       Prefer: method === "GET" ? "count=exact" : "return=representation",
       ...extraHeaders,
