@@ -65,13 +65,13 @@ export function HomeClient() {
           <span className="eyebrow">Classics Learning Platform · v0.1.0</span>
           <h1>把古诗词做成一个真正愿意反复打开的学习产品</h1>
           <p>
-            现在不只是内容原型，而是完整的正式仓库骨架：132 篇内容、可检索的 API、学习进度、错题本与成就系统一起上线。
+            现在不只是内容原型，而是完整的正式仓库骨架：626 篇内容、可检索的 API、学习进度、错题本与成就系统一起上线。
           </p>
           <div className="hero-actions">
             <a href="#works" className="button button-primary">
               直接开始学习
             </a>
-            <Link href="/works/春晓-孟浩然" className="button button-secondary">
+            <Link href="/works/chun-xiao" className="button button-secondary">
               打开示例作品
             </Link>
           </div>
@@ -253,7 +253,7 @@ export function HomeClient() {
             <h2>当前已打通</h2>
           </div>
           <ul className="bullet-list">
-            <li>132 篇作品标准化入库，自动生成封面、题目与相关推荐。</li>
+            <li>626 篇作品标准化入库，自动生成封面、题目与相关推荐。</li>
             <li>Fastify API 提供搜索、详情、进度、错题本、成就接口。</li>
             <li>Next.js 正式前端接入学习看板和作品详情学习流程。</li>
           </ul>

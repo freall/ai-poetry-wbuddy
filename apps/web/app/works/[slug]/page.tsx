@@ -8,6 +8,9 @@ export function generateStaticParams() {
 }
 
 export default async function WorkDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  // Next.js static export may leave CJK slugs URL-encoded (e.g. %E5%A4%9C...),
+  // decode them so Supabase queries match the actual slug values.
+  const slug = decodeURIComponent(rawSlug);
   return <WorkDetailClient slug={slug} />;
 }
