@@ -46,7 +46,7 @@ function supabaseRequest(table, method, body, queryParams) {
     
     const options = {
       hostname: url.hostname,
-      path: url.pathname,
+      path: url.pathname + url.search,
       method,
       headers: {
         'apikey': SERVICE_ROLE_KEY,
