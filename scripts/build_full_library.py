@@ -19,10 +19,10 @@ TANG_PATH = RAW_REPO_DIR / "全唐诗" / "唐诗三百首.json"
 SONG_PATH = RAW_REPO_DIR / "宋词" / "宋词三百首.json"
 OUTPUT_DATASET_PATH = PROCESSED_DIR / "classics-library.json"
 
-TARGET_TOTAL = 132
+TARGET_TOTAL = 620
 TARGET_BY_COLLECTION = {
-    "唐诗三百首": 72,
-    "宋词三百首": 44,
+    "唐诗三百首": 340,
+    "宋词三百首": 270,
 }
 
 IMG_DIR.mkdir(parents=True, exist_ok=True)

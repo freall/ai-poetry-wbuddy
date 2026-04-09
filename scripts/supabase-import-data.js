@@ -2,10 +2,30 @@
 /**
  * 通过 Supabase REST API 导入内容数据到已建好的表中。
  * 前置条件：已在 Supabase Dashboard SQL Editor 中执行 supabase-schema.sql
+ * 
+ * 用法：
+ *   SUPABASE_SECRET_KEY=xxx node scripts/supabase-import-data.js
+ *   或在 .env.local 中配置 SUPABASE_SECRET_KEY 后直接运行
  */
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+
+// 尝试从 .env.local 加载环境变量
+const envLocalPath = path.resolve(__dirname, '../.env.local');
+if (fs.existsSync(envLocalPath)) {
+  const envContent = fs.readFileSync(envLocalPath, 'utf-8');
+  for (const line of envContent.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eqIdx = trimmed.indexOf('=');
+    if (eqIdx > 0) {
+      const key = trimmed.substring(0, eqIdx).trim();
+      const val = trimmed.substring(eqIdx + 1).trim();
+      if (!process.env[key]) process.env[key] = val;
+    }
+  }
+}
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://kldrdqxtwcufrjcgrrbj.supabase.co';
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SECRET_KEY || '';
@@ -13,7 +33,7 @@ const SERVICE_ROLE_KEY = process.env.SUPABASE_SECRET_KEY || '';
 const datasetPath = path.resolve(__dirname, '../data/processed/classics-library.json');
 const dataset = JSON.parse(fs.readFileSync(datasetPath, 'utf-8'));
 
-function supabaseRequest(table, method, body) {
+function supabaseRequest(table, method, body, queryParams) {
   return new Promise((resolve, reject) => {
     if (!SERVICE_ROLE_KEY) {
       console.error('❌ SUPABASE_SECRET_KEY environment variable is required');
@@ -21,6 +41,7 @@ function supabaseRequest(table, method, body) {
     }
     
     const url = new URL(`/rest/v1/${table}`, SUPABASE_URL);
+    if (queryParams) url.search = queryParams;
     const postData = body ? JSON.stringify(body) : null;
     
     const options = {
@@ -82,6 +103,21 @@ async function batchInsert(table, rows, batchSize = 100) {
 async function main() {
   console.log('Supabase REST API Data Import');
   console.log(`  Project: ${SUPABASE_URL}`);
+  console.log('');
+
+  // 清空现有数据（按依赖顺序删除）
+  console.log('Cleaning existing data...');
+  const tablesToDelete = ['user_achievements', 'mistake_notebook', 'learning_progress', 'achievement_definitions', 'relations', 'quizzes', 'assets', 'works', 'authors'];
+  for (const table of tablesToDelete) {
+    try {
+      // PostgREST: DELETE 需要过滤条件，id=not.is.null 匹配所有行
+      await supabaseRequest(table, 'DELETE', null, 'id=not.is.null');
+      console.log(`  ${table}: cleaned`);
+    } catch (err) {
+      // 空表会返回 406，忽略
+      console.log(`  ${table}: ${err.message.includes('406') ? 'empty (skipped)' : err.message}`);
+    }
+  }
   console.log('');
 
   // 1. Authors
