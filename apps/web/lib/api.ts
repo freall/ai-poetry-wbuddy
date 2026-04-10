@@ -9,7 +9,7 @@ import type {
   QuizItem,
   WorkDetail,
 } from "./types";
-import { t2s, t2sOrEmpty, t2sArray, t2sSlug } from "./t2s";
+import { t2s, t2sOrEmpty, t2sArray, t2sSlug, s2t } from "./t2s";
 
 export const DEMO_USER_ID = "demo-user";
 
@@ -21,7 +21,28 @@ export const SUPABASE_PUBLISHABLE_KEY =
 
 // ─── 资源 URL 解析 ─────────────────────────────────────
 // GitHub Pages 部署后，静态资源在 basePath 下
-export function resolveAssetUrl(path: string | null | undefined) {
+// 精选作品有独立意境封面（/images/covers/），其余使用生成封面（/images/generated/）
+const FEATURED_COVER_SLUGS = new Set([
+  "tao-hua-yuan-ji", "lou-shi-ming", "chu-shi-biao", "yue-yang-lou-ji", "shi-shuo", "zui-weng-ting-ji",
+  "chun-xiao", "wang-lu-shan-pu-bu", "deng-guan-que-lou", "jiang-xue", "fu-de-gu-yuan-cao-song-bie", "jing-ye-si",
+  "shui-diao-ge-tou-ming-yue-ji-shi-you", "nian-nu-jiao-chi-bi-huai-gu", "ru-meng-ling-zuo-ye-yu-shu-feng-zhou",
+  "qing-yu-an-yuan-xi",
+]);
+
+// AI 生成的 PNG 封面（优先于 SVG，画质更高）
+const PNG_COVER_SLUGS = new Set([
+  "jiang-xue",
+  // 后续添加更多 AI 生图时更新此列表
+]);
+
+export function resolveAssetUrl(path: string | null | undefined, slug?: string) {
+  // 精选作品：cover_asset_path 为空时，自动使用意境封面
+  if (!path && slug && FEATURED_COVER_SLUGS.has(slug)) {
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "/ai-poetry-wbuddy";
+    // 优先使用 PNG（AI 生图），否则使用 SVG（程序生成意境图）
+    const ext = PNG_COVER_SLUGS.has(slug) ? "png" : "svg";
+    return `${basePath}/images/covers/${slug}.${ext}`;
+  }
   if (!path) return null;
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
   // 封面 SVG 在 public/images/generated/ 下，GitHub Pages 静态托管
@@ -129,7 +150,9 @@ export const api = {
     }
     if (params.query) {
       const q = escapePostgrestValue(params.query);
-      filterParts.push(`or(title.ilike.%${q}%,theme_label.ilike.%${q}%,original_text.ilike.%${q}%)`);
+      const qTraditional = escapePostgrestValue(s2t(params.query));
+      // 同时搜索简体和繁体关键词，确保简体搜索也能匹配数据库中的繁体原文
+      filterParts.push(`or(title.ilike.%${q}%,theme_label.ilike.%${q}%,original_text.ilike.%${q}%,original_text.ilike.%${qTraditional}%)`);
     }
 
     const rows = await supabaseFetch<

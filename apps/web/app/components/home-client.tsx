@@ -167,7 +167,7 @@ export function HomeClient() {
             <span>{unlockedAchievements.length} / {achievements.length}</span>
           </div>
           <div className="achievement-grid">
-            {achievements.slice(0, 4).map((item) => (
+            {achievements.map((item) => (
               <article key={item.id} className={`achievement-card ${item.unlocked ? "is-unlocked" : ""} ${themeMap[item.theme] ?? "theme-jade"}`}>
                 <div>
                   <strong>{item.title}</strong>
@@ -219,7 +219,7 @@ export function HomeClient() {
           {works.map((work) => (
             <Link key={work.id} href={`/works/${work.slug}`} className="work-card work-card-link">
               <div className="cover-shell">
-                {resolveAssetUrl(work.coverAssetPath) ? <img src={resolveAssetUrl(work.coverAssetPath) ?? undefined} alt={work.title} /> : <div className="cover-fallback">{work.title}</div>}
+                {resolveAssetUrl(work.coverAssetPath, work.slug) ? <img src={resolveAssetUrl(work.coverAssetPath, work.slug) ?? undefined} alt={work.title} /> : <div className="cover-fallback">{work.title}</div>}
               </div>
               <div className="work-card-body">
                 <div className="meta-row">

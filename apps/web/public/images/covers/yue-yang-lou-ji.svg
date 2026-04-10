@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#b3e5fc"/>
+      <stop offset="50%" stop-color="#81d4fa"/>
+      <stop offset="100%" stop-color="#4fc3f7"/>
+    </linearGradient>
+    <filter id="blur">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
+    </filter>
+  </defs>
+
+  <!-- 背景渐变 -->
+  <rect width="800" height="800" fill="url(#bg)"/>
+
+  <!-- 装饰圆环 -->
+  <circle cx="650" cy="150" r="200" fill="white" opacity="0.05"/>
+  <circle cx="150" cy="650" r="150" fill="white" opacity="0.03"/>
+
+  <!-- 意境图形 -->
+  
+    <g opacity="0.18">
+      <!-- 湖面 -->
+      <path d="M0 680 Q200 660 400 680 Q600 700 800 680 L800 800 L0 800 Z" fill="#1565c0"/>
+      <!-- 岳阳楼 -->
+      <rect x="340" y="530" width="120" height="150" fill="#5d4037"/>
+      <polygon points="320,530 480,530 400,460" fill="#795548"/>
+      <polygon points="335,460 465,460 400,400" fill="#8d6e63"/>
+      <!-- 楼层线条 -->
+      <line x1="340" y1="570" x2="460" y2="570" stroke="#4e342e" stroke-width="2"/>
+      <line x1="340" y1="620" x2="460" y2="620" stroke="#4e342e" stroke-width="2"/>
+      <!-- 波纹 -->
+      <path d="M0 720 Q100 710 200 720 Q300 730 400 720 Q500 710 600 720 Q700 730 800 720" stroke="#90caf9" stroke-width="1.5" fill="none" opacity="0.5"/>
+    </g>
+
+  <!-- 底部渐隐遮罩 -->
+  <defs>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0.12)"/>
+    </linearGradient>
+  </defs>
+  <rect y="500" width="800" height="300" fill="url(#fade)"/>
+
+  <!-- 作品标题 -->
+  <text x="400" y="680" text-anchor="middle"
+        font-family="'Noto Serif SC', 'Source Han Serif SC', 'STSong', serif"
+        font-size="52" font-weight="700"
+        fill="#2c1810"
+        style="text-shadow: 0 2px 8px rgba(255,255,255,0.8)">
+    岳阳楼记
+  </text>
+
+  <!-- 作者 · 朝代 · 主题 -->
+  <text x="400" y="730" text-anchor="middle"
+        font-family="'Noto Sans SC', 'PingFang SC', sans-serif"
+        font-size="22"
+        fill="rgba(44,24,16,0.6)">
+    范仲淹 · 宋 · 先忧后乐
+  </text>
+</svg>

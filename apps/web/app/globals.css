@@ -298,7 +298,7 @@ li {
 }
 
 .achievement-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
 }
 
 .achievement-card {
@@ -426,6 +426,26 @@ li {
   text-align: center;
   color: var(--primary-dark);
   font-weight: 700;
+}
+
+/* 占位内容视觉区分 */
+.placeholder-text {
+  color: var(--muted);
+  font-style: italic;
+  opacity: 0.75;
+}
+
+.placeholder-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(192, 113, 47, 0.12);
+  color: #8a4d1e;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  vertical-align: middle;
 }
 
 .work-card-body {

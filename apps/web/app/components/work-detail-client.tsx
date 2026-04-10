@@ -7,6 +7,17 @@ import { useEffect, useMemo, useState } from "react";
 import { api, resolveAssetUrl } from "../../lib/api";
 import type { WorkDetailPayload, WorkProgress } from "../../lib/types";
 
+/** 检测文本是否为模板占位内容 */
+function isPlaceholder(text: string | null | undefined): boolean {
+  if (!text) return true;
+  // 模板占位文本的特征关键词
+  return (
+    text.includes("正在补充中") ||
+    text.includes("建议先从") ||
+    text.includes("做题后回看原文")
+  );
+}
+
 export function WorkDetailClient({ slug }: { slug: string }) {
   const [payload, setPayload] = useState<WorkDetailPayload | null>(null);
   const [progress, setProgress] = useState<WorkProgress | null>(null);
@@ -123,7 +134,7 @@ export function WorkDetailClient({ slug }: { slug: string }) {
 
       <section className="detail-hero panel">
         <div className="detail-hero-cover">
-          {resolveAssetUrl(work.coverAssetPath) ? <img src={resolveAssetUrl(work.coverAssetPath) ?? undefined} alt={work.title} /> : null}
+          {resolveAssetUrl(work.coverAssetPath, work.slug) ? <img src={resolveAssetUrl(work.coverAssetPath, work.slug) ?? undefined} alt={work.title} /> : <div className="cover-fallback">{work.title}</div>}
         </div>
         <div className="detail-hero-copy">
           <div className="meta-row">
@@ -135,7 +146,7 @@ export function WorkDetailClient({ slug }: { slug: string }) {
           <p className="muted">
             {work.author.name} · {work.dynasty} · {work.genre} · 难度 {work.difficultyLevel}
           </p>
-          <p>{work.backgroundText}</p>
+          <p className={isPlaceholder(work.backgroundText) ? "placeholder-text" : ""}>{work.backgroundText}</p>
           <div className="hero-actions">
             <button className="button button-primary" onClick={() => void updateProgress({ viewed: true, rewardStatus: progress?.rewardStatus ?? "bronze" })}>
               记录已浏览
@@ -169,8 +180,14 @@ export function WorkDetailClient({ slug }: { slug: string }) {
           <div className="panel-heading">
             <h2>译文与赏析</h2>
           </div>
-          <p>{work.translationText ?? "译文正在补充中。"}</p>
-          <p>{work.appreciationText ?? "赏析正在补充中。"}</p>
+          <p className={isPlaceholder(work.translationText) ? "placeholder-text" : ""}>
+            {work.translationText ?? "译文正在补充中。"}
+            {isPlaceholder(work.translationText) ? <span className="placeholder-badge">待补充</span> : null}
+          </p>
+          <p className={isPlaceholder(work.appreciationText) ? "placeholder-text" : ""}>
+            {work.appreciationText ?? "赏析正在补充中。"}
+            {isPlaceholder(work.appreciationText) ? <span className="placeholder-badge">待补充</span> : null}
+          </p>
         </article>
 
         <article className="panel prose-panel">

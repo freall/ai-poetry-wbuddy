@@ -38,3 +38,14 @@ export function t2sArray(values: string[]): string[] {
 export function t2sSlug(slug: string): string {
   return converter(slug);
 }
+
+// ─── 简体 → 繁体（搜索用） ──────────────────────────────
+const reverseConverter = OpenCC.Converter({ from: "cn", to: "tw" });
+
+/**
+ * 将简体中文文本转为繁体中文。
+ * 用于搜索时同时匹配数据库中的繁体原文。
+ */
+export function s2t(value: string): string {
+  return reverseConverter(value);
+}

@@ -30,7 +30,7 @@ out/
 
 # Generated slugs (rebuilt on prebuild)
 apps/web/slugs.json
-apps/web/public/images/
+apps/web/public/images/generated/
 
 # Raw downloaded source material and local clones
 /data/raw/

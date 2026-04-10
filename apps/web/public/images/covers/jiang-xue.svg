@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eceff1"/>
+      <stop offset="50%" stop-color="#cfd8dc"/>
+      <stop offset="100%" stop-color="#b0bec5"/>
+    </linearGradient>
+    <filter id="blur">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
+    </filter>
+  </defs>
+
+  <!-- 背景渐变 -->
+  <rect width="800" height="800" fill="url(#bg)"/>
+
+  <!-- 装饰圆环 -->
+  <circle cx="650" cy="150" r="200" fill="white" opacity="0.05"/>
+  <circle cx="150" cy="650" r="150" fill="white" opacity="0.03"/>
+
+  <!-- 意境图形 -->
+  
+    <g opacity="0.22">
+      <!-- 远山雪景 -->
+      <path d="M0 600 Q100 400 250 500 Q350 450 400 400 Q500 300 600 450 Q700 400 800 550 L800 800 L0 800 Z" fill="#546e7a"/>
+      <!-- 孤舟 -->
+      <path d="M320 680 Q370 660 430 680 Q370 695 320 680" fill="#5d4037"/>
+      <line x1="370" y1="680" x2="370" y2="630" stroke="#5d4037" stroke-width="2"/>
+      <!-- 蓑笠翁 -->
+      <ellipse cx="370" cy="655" rx="8" ry="12" fill="#37474f"/>
+      <path d="M355 648 L385 648 L370 638 Z" fill="#455a64"/>
+      <!-- 雪花 -->
+      <circle cx="100" cy="200" r="3" fill="white" opacity="0.6"/>
+      <circle cx="300" cy="300" r="2" fill="white" opacity="0.5"/>
+      <circle cx="500" cy="150" r="3" fill="white" opacity="0.4"/>
+      <circle cx="650" cy="250" r="2" fill="white" opacity="0.5"/>
+      <circle cx="200" cy="400" r="2" fill="white" opacity="0.3"/>
+      <circle cx="550" cy="350" r="3" fill="white" opacity="0.4"/>
+      <circle cx="700" cy="180" r="2" fill="white" opacity="0.5"/>
+      <!-- 江面 -->
+      <path d="M0 700 Q200 690 400 700 Q600 710 800 700 L800 800 L0 800 Z" fill="#78909c" opacity="0.3"/>
+    </g>
+
+  <!-- 底部渐隐遮罩 -->
+  <defs>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0.12)"/>
+    </linearGradient>
+  </defs>
+  <rect y="500" width="800" height="300" fill="url(#fade)"/>
+
+  <!-- 作品标题 -->
+  <text x="400" y="680" text-anchor="middle"
+        font-family="'Noto Serif SC', 'Source Han Serif SC', 'STSong', serif"
+        font-size="52" font-weight="700"
+        fill="#2c1810"
+        style="text-shadow: 0 2px 8px rgba(255,255,255,0.8)">
+    江雪
+  </text>
+
+  <!-- 作者 · 朝代 · 主题 -->
+  <text x="400" y="730" text-anchor="middle"
+        font-family="'Noto Sans SC', 'PingFang SC', sans-serif"
+        font-size="22"
+        fill="rgba(44,24,16,0.6)">
+    柳宗元 · 唐 · 寒江孤景
+  </text>
+</svg>
