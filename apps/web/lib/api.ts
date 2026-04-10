@@ -36,18 +36,36 @@ const PNG_COVER_SLUGS = new Set([
 ]);
 
 export function resolveAssetUrl(path: string | null | undefined, slug?: string) {
-  // 精选作品：cover_asset_path 为空时，自动使用意境封面
-  if (!path && slug && FEATURED_COVER_SLUGS.has(slug)) {
+  // 1. 如果已经有路径，直接返回
+  if (path) {
+    if (path.startsWith("http://") || path.startsWith("https://")) return path;
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "/ai-poetry-wbuddy";
-    // 优先使用 PNG（AI 生图），否则使用 SVG（程序生成意境图）
-    const ext = PNG_COVER_SLUGS.has(slug) ? "png" : "svg";
-    return `${basePath}/images/covers/${slug}.${ext}`;
+    return `${basePath}${path.startsWith("/") ? path : `/${path}`}`;
   }
-  if (!path) return null;
-  if (path.startsWith("http://") || path.startsWith("https://")) return path;
-  // 封面 SVG 在 public/images/generated/ 下，GitHub Pages 静态托管
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "/ai-poetry-wbuddy";
-  return `${basePath}${path.startsWith("/") ? path : `/${path}`}`;
+  
+  // 2. 如果没有路径但有slug，尝试提供默认封面
+  if (slug) {
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "/ai-poetry-wbuddy";
+    
+    // 优先检查精选作品
+    if (FEATURED_COVER_SLUGS.has(slug)) {
+      // 优先使用 PNG（AI 生图），否则使用 SVG
+      const ext = PNG_COVER_SLUGS.has(slug) ? "png" : "svg";
+      return `${basePath}/images/covers/${slug}.${ext}`;
+    }
+    
+    // 其次检查生成的基本封面（所有作品都有）
+    // 注意：slug可能包含特殊字符，需要确保文件名匹配
+    const safeSlug = slug.replace(/[^a-zA-Z0-9-_.]/g, '_');
+    const generatedPath = `${basePath}/images/generated/${safeSlug}.svg`;
+    
+    // 在实际项目中，这里应该检查文件是否存在
+    // 但为了简化，我们假设所有作品都有对应的封面
+    return generatedPath;
+  }
+  
+  // 3. 既没有路径也没有slug，返回null
+  return null;
 }
 
 // ─── PostgREST 过滤值转义 ──────────────────────────────
@@ -805,5 +823,75 @@ export const api = {
     }
 
     return { recorded: true, resolved: payload.isCorrect };
+  },
+
+  randomWorks: async (params: {
+    excludeIds?: string[];
+    limit?: number;
+    collection?: string;
+  }): Promise<{ items: WorkCard[] }> => {
+    // 构建排除条件
+    let filterParts: string[] = [];
+    if (params.excludeIds && params.excludeIds.length > 0) {
+      filterParts.push(`id.not.in.(${params.excludeIds.map(id => escapePostgrestValue(id)).join(",")})`);
+    }
+    if (params.collection && params.collection !== "全部") {
+      filterParts.push(`collection.eq.${escapePostgrestValue(params.collection)}`);
+    }
+
+    // 使用PostgREST的随机排序功能
+    const orderClause = "random()";
+
+    const rows = await supabaseFetch<
+      Array<{
+        id: string;
+        slug: string;
+        title: string;
+        dynasty: string;
+        genre: string;
+        collection: string;
+        textbook_stage: string | null;
+        difficulty_level: number;
+        theme_label: string | null;
+        tags_json: string[];
+        original_text: string;
+        background_text: string | null;
+        author_summary: string | null;
+        cover_asset_path: string | null;
+        // joined from authors
+        authors: Array<{ name: string }>;
+      }>
+    >("works", {
+      select: "id,slug,title,dynasty,genre,collection,textbook_stage,difficulty_level,theme_label,tags_json,original_text,background_text,author_summary,cover_asset_path,authors(name)",
+      filters: filterParts.length > 0 ? filterParts : undefined,
+      order: orderClause,
+      limit: params.limit || 10,
+    });
+
+    const items: WorkCard[] = rows.map((r) => {
+      const excerpt = r.original_text.replace(/\n/g, " ").slice(0, 60) + "…";
+      return {
+        id: r.id,
+        slug: t2sSlug(r.slug),
+        title: t2sOrEmpty(r.title),
+        authorName: t2sOrEmpty(r.authors?.[0]?.name) || "佚名",
+        dynasty: t2sOrEmpty(r.dynasty),
+        genre: t2sOrEmpty(r.genre),
+        collection: t2sOrEmpty(r.collection),
+        textbookStage: t2s(r.textbook_stage),
+        difficultyLevel: r.difficulty_level,
+        themeLabel: t2s(r.theme_label),
+        tags: t2sArray(Array.isArray(r.tags_json) ? r.tags_json : []),
+        coverAssetPath: r.cover_asset_path,
+        originalText: t2sOrEmpty(r.original_text),
+        backgroundText: t2s(r.background_text),
+        authorSummary: t2s(r.author_summary),
+        quizCount: 0,
+        relationCount: 0,
+        excerpt: t2sOrEmpty(excerpt),
+      };
+    });
+
+    return { items };
   },
 };

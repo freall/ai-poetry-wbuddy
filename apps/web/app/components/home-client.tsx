@@ -71,8 +71,8 @@ export function HomeClient() {
             <a href="#works" className="button button-primary">
               直接开始学习
             </a>
-            <Link href="/works/chun-xiao" className="button button-secondary">
-              打开示例作品
+            <Link href="/browse" className="button button-secondary">
+              随机浏览诗词
             </Link>
           </div>
         </div>
