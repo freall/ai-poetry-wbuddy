@@ -19,6 +19,54 @@ export const SUPABASE_URL =
 export const SUPABASE_PUBLISHABLE_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
 
+  // 检查环境变量是否设置
+  if (typeof window !== 'undefined') {
+    // 更新：仅在开发环境显示详细警告，生产环境减少日志
+    const isDev = process.env.NODE_ENV === 'development';
+    
+    // 在浏览器控制台中验证Supabase连接
+    // 在开发环境添加连接测试功能
+    if (isDev && typeof window !== 'undefined') {
+      const testConnection = () => {
+        const testUrl = `${SUPABASE_URL}/rest/v1/works?select=id&limit=1`;
+        console.log(`%c[Supabase测试] 开始测试连接...`, 'color: #3B82F6; font-weight: bold');
+        console.log(`%c[Supabase测试] URL: ${testUrl}`, 'color: #3B82F6');
+        console.log(`%c[Supabase测试] API密钥: ${SUPABASE_PUBLISHABLE_KEY ? '已设置' : '未设置'}`, 'color: #3B82F6');
+        
+        // 静默测试连接，不干扰用户
+        if (SUPABASE_PUBLISHABLE_KEY) {
+          fetch(testUrl, {
+            method: 'GET',
+            headers: {
+              apikey: SUPABASE_PUBLISHABLE_KEY,
+              Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+              "Content-Type": "application/json",
+            },
+          })
+            .then(res => {
+              if (res.ok) {
+                console.log(`%c[Supabase测试] ✅ 连接成功 (HTTP ${res.status})`, 'color: #10B981; font-weight: bold');
+              } else {
+                console.error(`%c[Supabase测试] ❌ 连接失败 (HTTP ${res.status})`, 'color: #EF4444; font-weight: bold');
+                return res.text().then(text => {
+                  console.error(`%c[Supabase测试] 错误详情: ${text.substring(0, 200)}`, 'color: #EF4444');
+                });
+              }
+            })
+            .catch(err => {
+              console.error(`%c[Supabase测试] ❌ 网络错误: ${err.message}`, 'color: #EF4444; font-weight: bold');
+            });
+        }
+      };
+      
+      // 在页面加载时自动测试连接
+      if (!window.__supabase_connection_tested__) {
+        window.__supabase_connection_tested__ = true;
+        setTimeout(testConnection, 1000);
+      }
+    }
+  }
+
 // ─── 资源 URL 解析 ─────────────────────────────────────
 // GitHub Pages 部署后，静态资源在 basePath 下
 // 精选作品有独立意境封面（/images/covers/），其余使用生成封面（/images/generated/）
@@ -830,68 +878,109 @@ export const api = {
     limit?: number;
     collection?: string;
   }): Promise<{ items: WorkCard[] }> => {
-    // 构建排除条件
-    let filterParts: string[] = [];
-    if (params.excludeIds && params.excludeIds.length > 0) {
-      filterParts.push(`id.not.in.(${params.excludeIds.map(id => escapePostgrestValue(id)).join(",")})`);
+    try {
+      console.log("randomWorks called with params:", params);
+      
+      // 构建过滤条件
+      let filterParts: string[] = [];
+      
+      // 修复：确保excludeIds参数正确处理，避免空数组问题
+      if (params.excludeIds && params.excludeIds.length > 0 && params.excludeIds[0]) {
+        try {
+          const escapedIds = params.excludeIds
+            .filter(id => id && id.trim().length > 0)
+            .map(id => escapePostgrestValue(id));
+          
+          if (escapedIds.length > 0) {
+            filterParts.push(`id.not.in.(${escapedIds.join(",")})`);
+          }
+        } catch (err) {
+          console.warn("处理excludeIds时出错:", err);
+        }
+      }
+      
+      if (params.collection && params.collection !== "全部") {
+        try {
+          filterParts.push(`collection.eq.${escapePostgrestValue(params.collection)}`);
+        } catch (err) {
+          console.warn("处理collection参数时出错:", err);
+        }
+      }
+
+      // 由于PostgREST不支持order=random()，我们需要先获取作品，然后在客户端随机化
+      // 获取比需要数量更多的作品，以确保随机性
+      const fetchLimit = Math.min(100, (params.limit || 10) * 3);
+      
+      console.log("Fetching works with limit:", fetchLimit, "filters:", filterParts);
+      
+      const rows = await supabaseFetch<
+        Array<{
+          id: string;
+          slug: string;
+          title: string;
+          dynasty: string;
+          genre: string;
+          collection: string;
+          textbook_stage: string | null;
+          difficulty_level: number;
+          theme_label: string | null;
+          tags_json: string[];
+          original_text: string;
+          background_text: string | null;
+          author_summary: string | null;
+          cover_asset_path: string | null;
+          // joined from authors
+          authors: Array<{ name: string }>;
+        }>
+      >("works", {
+        select: "id,slug,title,dynasty,genre,collection,textbook_stage,difficulty_level,theme_label,tags_json,original_text,background_text,author_summary,cover_asset_path,authors(name)",
+        filters: filterParts.length > 0 ? filterParts : undefined,
+        order: "id", // 使用稳定的排序
+        limit: fetchLimit,
+      });
+
+      console.log(`Fetched ${rows.length} rows from database`);
+      
+      if (rows.length === 0) {
+        console.warn("No works found in database!");
+        return { items: [] };
+      }
+
+      // 在客户端随机化
+      const shuffledRows = [...rows].sort(() => Math.random() - 0.5);
+      const selectedRows = shuffledRows.slice(0, params.limit || 10);
+
+      const items: WorkCard[] = selectedRows.map((r) => {
+        const excerpt = r.original_text.replace(/\n/g, " ").slice(0, 60) + "…";
+        return {
+          id: r.id,
+          slug: t2sSlug(r.slug),
+          title: t2sOrEmpty(r.title),
+          authorName: t2sOrEmpty(r.authors?.[0]?.name) || "佚名",
+          dynasty: t2sOrEmpty(r.dynasty),
+          genre: t2sOrEmpty(r.genre),
+          collection: t2sOrEmpty(r.collection),
+          textbookStage: t2s(r.textbook_stage),
+          difficultyLevel: r.difficulty_level,
+          themeLabel: t2s(r.theme_label),
+          tags: t2sArray(Array.isArray(r.tags_json) ? r.tags_json : []),
+          coverAssetPath: r.cover_asset_path,
+          originalText: t2sOrEmpty(r.original_text),
+          backgroundText: t2s(r.background_text),
+          authorSummary: t2s(r.author_summary),
+          quizCount: 0,
+          relationCount: 0,
+          excerpt: t2sOrEmpty(excerpt),
+        };
+      });
+
+      console.log(`Returning ${items.length} random works`);
+      return { items };
+      
+    } catch (error: any) {
+      console.error("Error in randomWorks:", error);
+      console.error("Error details:", error.message);
+      throw error;
     }
-    if (params.collection && params.collection !== "全部") {
-      filterParts.push(`collection.eq.${escapePostgrestValue(params.collection)}`);
-    }
-
-    // 使用PostgREST的随机排序功能
-    const orderClause = "random()";
-
-    const rows = await supabaseFetch<
-      Array<{
-        id: string;
-        slug: string;
-        title: string;
-        dynasty: string;
-        genre: string;
-        collection: string;
-        textbook_stage: string | null;
-        difficulty_level: number;
-        theme_label: string | null;
-        tags_json: string[];
-        original_text: string;
-        background_text: string | null;
-        author_summary: string | null;
-        cover_asset_path: string | null;
-        // joined from authors
-        authors: Array<{ name: string }>;
-      }>
-    >("works", {
-      select: "id,slug,title,dynasty,genre,collection,textbook_stage,difficulty_level,theme_label,tags_json,original_text,background_text,author_summary,cover_asset_path,authors(name)",
-      filters: filterParts.length > 0 ? filterParts : undefined,
-      order: orderClause,
-      limit: params.limit || 10,
-    });
-
-    const items: WorkCard[] = rows.map((r) => {
-      const excerpt = r.original_text.replace(/\n/g, " ").slice(0, 60) + "…";
-      return {
-        id: r.id,
-        slug: t2sSlug(r.slug),
-        title: t2sOrEmpty(r.title),
-        authorName: t2sOrEmpty(r.authors?.[0]?.name) || "佚名",
-        dynasty: t2sOrEmpty(r.dynasty),
-        genre: t2sOrEmpty(r.genre),
-        collection: t2sOrEmpty(r.collection),
-        textbookStage: t2s(r.textbook_stage),
-        difficultyLevel: r.difficulty_level,
-        themeLabel: t2s(r.theme_label),
-        tags: t2sArray(Array.isArray(r.tags_json) ? r.tags_json : []),
-        coverAssetPath: r.cover_asset_path,
-        originalText: t2sOrEmpty(r.original_text),
-        backgroundText: t2s(r.background_text),
-        authorSummary: t2s(r.author_summary),
-        quizCount: 0,
-        relationCount: 0,
-        excerpt: t2sOrEmpty(excerpt),
-      };
-    });
-
-    return { items };
   },
 };

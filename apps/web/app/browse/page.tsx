@@ -18,6 +18,7 @@ export default function BrowsePage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [error, setError] = useState<string | null>(null);
   
   // 已加载作品ID集合，避免重复
   const loadedIdsRef = useRef<Set<string>>(new Set());
@@ -55,8 +56,25 @@ export default function BrowsePage() {
       // 更新作品列表
       setWorks(prev => [...prev, ...items]);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error("加载随机作品失败:", error);
+      console.error("错误详情:", error.message);
+      console.error("错误栈:", error.stack);
+      
+      // 更具体的错误处理
+      if (error.message && error.message.includes("401")) {
+        setError("Supabase API密钥无效或已过期，请检查环境变量配置");
+      } else if (error.message && error.message.includes("404")) {
+        setError("数据库表不存在，请联系系统管理员");
+      } else if (error.message && error.message.includes("Failed to fetch")) {
+        setError("网络连接失败，请检查网络设置后重试");
+      } else {
+        setError("无法加载诗词作品，请稍后重试或联系管理员");
+      }
+      
+      if (works.length === 0) {
+        setHasMore(false);
+      }
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -181,13 +199,33 @@ export default function BrowsePage() {
           </>
         ) : (
           <div className="h-full flex flex-col items-center justify-center">
-            <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
-                <span className="text-slate-400 text-2xl">📖</span>
+            {error ? (
+              <div className="text-center max-w-md p-8">
+                <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                  <span className="text-red-500 text-2xl">⚠️</span>
+                </div>
+                <h3 className="text-xl font-semibold text-slate-800 mb-3">加载失败</h3>
+                <p className="text-slate-600 mb-6">{error}</p>
+                <button
+                  onClick={() => {
+                    setError(null);
+                    setLoading(true);
+                    loadRandomWorks();
+                  }}
+                  className="px-6 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors shadow-lg"
+                >
+                  重新加载
+                </button>
               </div>
-              <h3 className="text-lg font-medium text-slate-700 mb-2">暂无作品</h3>
-              <p className="text-slate-500">尝试刷新页面重新加载</p>
-            </div>
+            ) : (
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
+                  <span className="text-slate-400 text-2xl">📖</span>
+                </div>
+                <h3 className="text-lg font-medium text-slate-700 mb-2">暂无作品</h3>
+                <p className="text-slate-500">尝试刷新页面重新加载</p>
+              </div>
+            )}
           </div>
         )}
       </main>
