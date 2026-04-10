@@ -880,6 +880,7 @@ export const api = {
   }): Promise<{ items: WorkCard[] }> => {
     try {
       console.log("randomWorks called with params:", params);
+      console.log("API版本: 2026-04-10-fixed-random-order");
       
       // 构建过滤条件
       let filterParts: string[] = [];
